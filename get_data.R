@@ -51,3 +51,20 @@ df %>%
                  color = Country.Name)) +
   xlim(2000, 2020)
 
+
+df %>%
+  #filter(year >= 2000) %>%
+  group_by(year) %>%
+  summarise(all = n(),
+            nas = sum(is.na(value)),
+            min_value = min(value, na.rm = T),
+            max_value = max(value, na.rm = T)) %>%
+  filter(all != nas) %>%
+  ggplot() +
+  geom_ribbon(aes(x = year,
+                  ymin = min_value,
+                  ymax = max_value),
+              fill = 'gray') +
+  theme_classic() +
+  labs(title = 'Minimum and maximum yearly scores')
+ 
