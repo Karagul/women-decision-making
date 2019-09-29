@@ -52,19 +52,39 @@ df %>%
   xlim(2000, 2020)
 
 
-df %>%
+p_main <- df %>%
   #filter(year >= 2000) %>%
   group_by(year) %>%
   summarise(all = n(),
             nas = sum(is.na(value)),
             min_value = min(value, na.rm = T),
-            max_value = max(value, na.rm = T)) %>%
+            max_value = max(value, na.rm = T),
+            avg_value = mean(value, na.rm = T)) %>%
   filter(all != nas) %>%
   ggplot() +
   geom_ribbon(aes(x = year,
                   ymin = min_value,
                   ymax = max_value),
               fill = 'gray') +
+  geom_text(aes(x = max(year)-1,
+                y = max(avg_value),
+                label = 'Average over time'),
+            color = 'gray30') + 
+  geom_text(aes(x = max(year) - 1,
+                y = max(max_value),
+                label = 'Maximum values over time'),
+            color = 'gray30') +
+  geom_text(aes(x = max(year) - 1,
+                y = min(min_value),
+                label = 'Minimum values over time'),
+            color = 'gray30') +
+  geom_point(aes(x = year,
+                 y = avg_value)) +
   theme_classic() +
-  labs(title = 'Minimum and maximum yearly scores')
- 
+  labs(title = 'Minimum and maximum yearly scores',
+       subtitle = 'Scores based on women participating in the three decisions (own health care, major household purchases, and visiting family) 
+(% of women age 15-49)',
+       y = 'Scores',
+       x = 'Year') 
+
+ggsave('plot.png', p_main,width = 25, height = 13, units = 'cm') 
